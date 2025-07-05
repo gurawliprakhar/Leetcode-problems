@@ -232,3 +232,190 @@ class Solution {
     }
 }
 ```
+
+
+```java
+char[] temp = new char[j - i];
+```
+
+This line is part of your custom `findSubstring(String s, int i, int j)` function.
+
+---
+
+## 🔍 What It Does:
+
+* You are simulating `s.substring(i, j)` manually.
+* So, `temp` is a new character array that will hold characters from index `i` to `j - 1`.
+* Its size is `j - i` (just like Java's substring returns `j - i` characters).
+
+---
+
+## 🧪 Dry Run Example
+
+Let’s dry run with:
+
+```java
+String s = "AAAAACCCCCAAAAACCCCCCAAAAAGGGTTT";
+int i = 0;
+int j = 10;
+```
+
+So:
+
+```java
+char[] temp = new char[j - i];  // temp = new char[10];
+```
+
+### `s.substring(0, 10)` would be:
+
+```java
+"AAAAACCCCC"
+```
+
+Now let’s simulate this:
+
+### Step-by-step:
+
+```java
+for (int k = i; k < j; k++) {
+    temp[k - i] = s.charAt(k);
+}
+```
+
+| k | k - i | s.charAt(k) | temp\[k - i] |
+| - | ----- | ----------- | ------------ |
+| 0 | 0     | 'A'         | 'A'          |
+| 1 | 1     | 'A'         | 'A'          |
+| 2 | 2     | 'A'         | 'A'          |
+| 3 | 3     | 'A'         | 'A'          |
+| 4 | 4     | 'A'         | 'A'          |
+| 5 | 5     | 'C'         | 'C'          |
+| 6 | 6     | 'C'         | 'C'          |
+| 7 | 7     | 'C'         | 'C'          |
+| 8 | 8     | 'C'         | 'C'          |
+| 9 | 9     | 'C'         | 'C'          |
+
+➡️ Final value of `temp` = `['A','A','A','A','A','C','C','C','C','C']`
+
+---
+
+### Convert to String:
+
+```java
+String res = "";
+for (int k = 0; k < temp.length; k++) {
+    res += temp[k];
+}
+```
+
+Step-by-step value of `res`:
+
+* "A"
+* "AA"
+* "AAA"
+* ...
+* "AAAAACCCCC"
+
+✅ Matches `s.substring(0, 10)`
+
+---
+
+## ✅ Summary
+
+* `char[] temp = new char[j - i]` creates a buffer to hold the custom substring.
+* You then fill it with `s.charAt(k)` values from `i` to `j - 1`.
+* Finally, you convert it back into a string by concatenating characters.
+Great! Let's **dry run** your `findRepeatedDnaSequences()` method **step-by-step** with a sample input:
+
+---
+
+## 🔍 Function:
+
+```java
+public List<String> findRepeatedDnaSequences(String s)
+```
+
+### Goal:
+
+Find all **10-letter substrings** that appear **more than once** in the string `s`.
+
+---
+
+## 🧪 Sample Input:
+
+```java
+s = "AAAAACCCCCAAAAACCCCCCAAAAAGGGTTT"
+```
+
+✅ This is a valid input (length = 32 > 10)
+
+---
+
+## 📦 Sets used:
+
+* `seen`: stores substrings seen once
+* `repeated`: stores substrings seen more than once
+
+---
+
+### Initialize:
+
+```java
+seen = {}
+repeated = {}
+```
+
+### Loop: `for (int i = 0; i <= s.length() - 10; i++)`
+
+`i` goes from 0 to 22 (since `s.length()` = 32)
+
+---
+
+### 🔁 First few iterations:
+
+| `i` | `window = findSubstring(s, i, i+10)` | Action                                | `seen` updates                 | `repeated` updates             |
+| --- | ------------------------------------ | ------------------------------------- | ------------------------------ | ------------------------------ |
+| 0   | `"AAAAACCCCC"`                       | Not in seen → add to `seen`           | `{"AAAAACCCCC"}`               | -                              |
+| 1   | `"AAAACCCCCA"`                       | Not in seen → add to `seen`           | `{"AAAAACCCCC", "AAAACCCCCA"}` | -                              |
+| 2   | `"AAACCCCCAA"`                       | Not in seen → add to `seen`           | add to `seen`                  | -                              |
+| 3   | `"AACCCCCAAA"`                       | Not in seen → add to `seen`           | add to `seen`                  | -                              |
+| 4   | `"ACCCCCAAAA"`                       | Not in seen → add to `seen`           | add to `seen`                  | -                              |
+| 5   | `"CCCCCAAAAA"`                       | Not in seen → add to `seen`           | add to `seen`                  | -                              |
+| 6   | `"CCCCAAAAAC"`                       | Not in seen → add to `seen`           | add to `seen`                  | -                              |
+| 7   | `"CCCAAAAACC"`                       | Not in seen → add to `seen`           | add to `seen`                  | -                              |
+| 8   | `"CCAAAAACCC"`                       | Not in seen → add to `seen`           | add to `seen`                  | -                              |
+| 9   | `"CAAAAACCCC"`                       | Not in seen → add to `seen`           | add to `seen`                  | -                              |
+| 10  | `"AAAAACCCCC"`                       | Already in `seen` → add to `repeated` | `seen` unchanged               | `{"AAAAACCCCC"}`               |
+| 11  | `"AAAACCCCCA"`                       | Already in `seen` → add to `repeated` | `seen` unchanged               | `{"AAAAACCCCC", "AAAACCCCCA"}` |
+
+...
+
+### Final `repeated` set:
+
+```java
+["AAAAACCCCC", "CCCCCAAAAA"]
+```
+
+✅ These substrings appeared **more than once**.
+
+---
+
+## 🔚 Final Output:
+
+```java
+return new ArrayList<>(repeated); // ["AAAAACCCCC", "CCCCCAAAAA"]
+```
+
+---
+
+## 📌 Summary of Logic:
+
+1. Start from `i = 0` to `i = s.length() - 10`
+2. For each position, get a 10-character window using `findSubstring()`
+3. If the window is not in `seen`, add it to `seen`
+4. If it’s already in `seen`, add it to `repeated`
+5. Return all repeated sequences
+
+---
+
+
