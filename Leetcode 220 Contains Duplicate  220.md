@@ -1,6 +1,6 @@
 Contains Duplicate III
 
-To explain the **"Contains Duplicate III"** problem to someone else, you can break it down like this:
+
 
 ---
 
