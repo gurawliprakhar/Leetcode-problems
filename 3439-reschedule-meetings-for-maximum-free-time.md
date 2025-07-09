@@ -1,4 +1,3 @@
-Absolutely! Here's a GitHub-style `README.md` file containing a **simple problem statement**, **example walkthrough**, **why sliding window**, **which type**, full **Java code**, and a **detailed dry run**.
 
 ---
 
