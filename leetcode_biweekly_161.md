@@ -453,6 +453,199 @@ If you can freely change values, then you can force any XOR in just one operatio
 ```
 
 ---
+Perfect! Let’s now work on the * for Problem 4 from **Leetcode Biweekly Contest 161**:
+
+---
+
+## 🎬 ** Number of Integers With Popcount-Depth Equal to K | Biweekly 161 Q4**
+
+---
+
+### 🎙️ **\[Intro - 0:00]**
+
+```
+ "Leetcode Biweekly 161 - Question 4"
+
+🎤 "Hey everyone, welcome back  In this we’ll solve the final problem from Leetcode Biweekly 161 — *Number of Integers With Popcount-Depth Equal to K*.
+
+This is a hard-level bit manipulation + DP problem — so let’s walk through it step by step!"
+```
+
+---
+
+### 📄 **\[Problem Statement - ]**
+
+```
+🎤 "You are given two integers `n` and `k`.
+
+A number x has a *popcount-depth* defined as follows:
+
+- Create a sequence:
+    - p0 = x
+    - pi+1 = popcount(pi), where popcount = number of set bits in binary
+
+- Stop when you reach 1. The number of steps taken is called the popcount-depth.
+
+👉 Your task: count how many numbers from 1 to n have popcount-depth exactly equal to k."
+```
+
+---
+
+### 🧠 **\[Understanding Through Example - ]**
+
+#### Example:
+
+```
+Input: n = 7, k = 2
+
+Check numbers from 1 to 7:
+
+x = 3 (11) → 3 → 2 → 1 → depth = 2 ✅
+
+x = 5 (101) → 5 → 2 → 1 → depth = 2 ✅
+
+x = 6 (110) → 6 → 2 → 1 → depth = 2 ✅
+
+Answer: 3
+```
+
+---
+
+### 🔬 **\[Approach - Intuition First ]**
+
+```
+🎤 "We observe two things:
+
+1. Final popcount-depth depends on how many 1s the number has, and how many 1s that number’s popcount has... until we reach 1.
+2. If we could precompute the depth for each popcount, we can count how many numbers up to n have exactly that number of 1s.
+
+→ This calls for: 
+    - Bit counting logic
+    - Dynamic Programming
+    - Digit DP to count numbers up to n with a specific number of 1s"
+```
+
+---
+
+### 🛠️ **\[Code Walkthrough ]**
+
+```java
+class Solution {
+    int[] dpDepth = new int[1001];
+    Long[][][] memo;
+
+    public int countExcellentNumbers(long n, int k) {
+        if (k == 0) return 0;
+        // Precompute popcount-depths
+        Arrays.fill(dpDepth, -1);
+        dpDepth[0] = 0;
+        dpDepth[1] = 0;
+        for (int i = 2; i <= 1000; i++) {
+            dpDepth[i] = 1 + dpDepth[Integer.bitCount(i)];
+        }
+
+        // Convert n to binary digits (MSB to LSB)
+        List<Integer> bin = new ArrayList<>();
+        while (n > 0) {
+            bin.add((int)(n % 2));
+            n /= 2;
+        }
+        Collections.reverse(bin);
+
+        // Memoization for digit DP
+        memo = new Long[bin.size() + 1][bin.size() + 1][2];
+        long ans = 0;
+
+        // Try all popcount values i with depth k
+        for (int i = 1; i <= bin.size(); i++) {
+            if (dpDepth[i] == k) {
+                ans += dfs(0, 0, 1, i, bin);
+            }
+        }
+        return (int) ans;
+    }
+
+    private long dfs(int pos, int count, int tight, int target, List<Integer> bin) {
+        if (count > target) return 0;
+        if (pos == bin.size()) return count == target ? 1 : 0;
+
+        if (memo[pos][count][tight] != null) return memo[pos][count][tight];
+
+        int limit = tight == 1 ? bin.get(pos) : 1;
+        long res = 0;
+        for (int d = 0; d <= limit; d++) {
+            res += dfs(pos + 1, count + d, tight == 1 && d == limit ? 1 : 0, target, bin);
+        }
+        return memo[pos][count][tight] = res;
+    }
+}
+```
+
+---
+
+### 🔍 **\[Code Explanation ]**
+
+```
+🎤 "Let’s break it down:
+
+1. Precompute popcount-depths for all possible popcounts (up to 1000)
+2. For each number of 1s `i`, check if its popcount-depth == k
+3. If yes, count how many numbers ≤ n have exactly `i` bits set
+   → Use digit-DP to count binary numbers with exactly i 1s, ≤ n
+
+So it's:
+- Outer loop for possible popcounts
+- Inner digit-DP using DFS with memoization"
+```
+
+---
+
+### 🧪 **\[Test Cases -]**
+
+#### Test Case 1:
+
+```java
+n = 4, k = 1
+Numbers: 2 (10) → 2→1 ✅, 4 (100) → 4→1 ✅
+Output: 2
+```
+
+#### Test Case 2:
+
+```java
+n = 7, k = 2
+Numbers: 3, 5, 6 → depth = 2
+Output: 3
+```
+
+---
+
+### ⏱️ **\[Time & Space Complexity ]**
+
+```
+🎤 "Time: O(#bits * #bits * 2) = around O(100 * 100)
+
+Space: O(bits * ones * tight) for DP memo
+
+Super efficient even for n up to 10^15"
+```
+
+---
+
+### ✅ **\[Conclusion - ]**
+
+```
+🎤 "This was a classic case of combining number theory with digit DP.
+
+We precompute popcount depths, then count matching numbers efficiently using binary digit logic."
+
+📌 "You’ll see this trick often in hard problems with large n ranges!"
+```
+
+---
+
+
+
 
 
 
